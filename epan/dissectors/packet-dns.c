@@ -189,6 +189,8 @@ static int hf_dns_apl_coded_prefix = -1;
 static int hf_dns_apl_negation = -1;
 static int hf_dns_apl_afdlength = -1;
 static int hf_dns_nsap_rdata = -1;
+static int hf_dns_naptr_order = -1;
+static int hf_dns_naptr_replacement = -1;
 
 static gint ett_dns = -1;
 static gint ett_dns_qd = -1;
@@ -2934,7 +2936,7 @@ dissect_dns_answer(tvbuff_t *tvb, int offsetx, int dns_data_offset,
       proto_item_append_text(trr, ", order %u, preference %u, flags %s",
                              order, preference, flags);
       offset = cur_offset;
-      proto_tree_add_text(rr_tree, tvb, offset, 2, "Order: %u", order);
+      proto_tree_add_uint(rr_tree, hf_dns_naptr_order, tvb, offset, 2, order);
       offset += 2;
       proto_tree_add_text(rr_tree, tvb, offset, 2, "Preference: %u", preference);
       offset += 2;
@@ -2952,7 +2954,7 @@ dissect_dns_answer(tvbuff_t *tvb, int offsetx, int dns_data_offset,
       offset += regex_len;
       proto_tree_add_text(rr_tree, tvb, offset, 1, "Replacement length: %u", replacement_len);
       offset++;
-      proto_tree_add_text(rr_tree, tvb, offset, replacement_len, "Replacement: %s", name_out);
+      proto_tree_add_string(rr_tree, tvb, hf_dns_naptr_replacement, offset, replacement_len, name_out);
 
     }
     break;
@@ -4529,6 +4531,16 @@ proto_register_dns(void)
 
     { &hf_dns_nsap_rdata,
       { "NSAP Data", "dns.nsap.rdata",
+        FT_BYTES, BASE_NONE, NULL, 0,
+        NULL, HFILL }},
+
+    { &hf_dns_naptr_order,
+      { "Order", "dns.naptr.order",
+        FT_UINT16, BASE_DEC, NULL, 0,
+        NULL, HFILL }},
+
+    { &hf_dns_naptr_replacement,
+      { "Replacement", "dns.naptr.replacement",
         FT_BYTES, BASE_NONE, NULL, 0,
         NULL, HFILL }}
 
